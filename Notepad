@@ -1,0 +1,84 @@
+from tkinter import *
+from tkinter.messagebox import showinfo
+from tkinter.filedialog import askopenfilename,asksaveasfilename
+import os
+def NewFile():
+    global file
+    root.title("Untitled-Notepad")
+    file=None
+    textArea.delete(1.0,END)
+    
+def openfile():
+    global file
+    file=askopenfilename(defaultextension=".txt",filetypes=[("All Files","*.*"),("Text Documents","*.txt")])
+    if file=="":
+        file=None
+    else:
+        root.title(os.path.basename(file) + "Notepad")
+        textArea.delete(1.0,END)
+        f=open(file,"r")
+        textArea.insert(1.0,f.read())
+        f.close()
+def Savefile():
+    global file
+    if file == None:
+        file = asksaveasfilename(initialfile = 'Untitled.txt', defaultextension=".txt",
+                           filetypes=[("All Files", "*.*"),
+                                     ("Text Documents", "*.txt")])
+        if file=="":
+            file=None
+    else:
+        f = open(file, "w")
+        f.write(textArea.get(1.0, END))
+        f.close()
+
+        root.title(os.path.basename(file) + "Notepad")
+        print("File Saved")
+def EXIT():
+    root.destroy()
+def CUT():
+    textArea.event_generate(("<<Cut>>"))
+def COPY():
+    textArea.event_generate(("<<Copy>>"))
+def PASTE():
+    textArea.event_generate(("<<Paste>>"))
+def About():
+    showinfo("Notepad","This is a Notepad")
+    
+    
+    
+root=Tk()
+root.geometry("600x300")
+root.title("Notepad")
+textArea=Text(root,font="lucida 30")
+file=None
+textArea.pack(expand=True,fill=BOTH)
+    
+
+
+menubar=Menu(root)
+m=Menu(menubar,tearoff=0)
+m.add_command(label="New",command=NewFile)
+m.add_command(label="Open",command=openfile)
+m.add_command(label="Save",command=Savefile)
+m.add_command(label="Exit",command=EXIT)
+root.config(menu=menubar)
+menubar.add_cascade(label="File",menu=m)
+
+m2=Menu(m,tearoff=0)
+m2.add_command(label="Cut",command=CUT)
+m2.add_command(label="Copy",command=COPY)
+m2.add_command(label="Paste",command=PASTE)
+menubar.add_cascade(label="Edit",menu=m2)
+
+
+m3=Menu(m2,tearoff=0)
+m3.add_command(label="About Notepad",command=About)
+menubar.add_cascade(label="Help",menu=m3)
+
+scrollbar=Scrollbar(textArea)
+scrollbar.pack(side=RIGHT,fill=Y)
+scrollbar.config(command=textArea.yview)
+textArea.config(yscrollcommand=scrollbar.set)
+root.mainloop()
+        
